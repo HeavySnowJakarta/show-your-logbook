@@ -1,0 +1,16 @@
+{
+  "name": "get_format",
+  "version": "1.0.0",
+  "description": "Test the file format of the Supabase database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-only",
+  "packageManager": "pnpm@10.9.0",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.8"
+  }
+}
