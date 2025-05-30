@@ -1,3 +1,4 @@
+'use client';
 /** 
  * The applet to show recent QSOs and allow the user to search by date and
  * callsign.
@@ -8,6 +9,17 @@ import { useState, useEffect } from "react";
 import { LogEntry } from "@/app/utils/log_entry";
 import { querier } from "@/app/utils/querier";
 import { CALLSIGN } from "@/config";
+
+import { Button, Input } from 'antd';
+// import type { GetProps } from "antd";
+import '@ant-design/v5-patch-for-react-19';
+
+import styles from './style.module.css';
+
+// Define onSearch.
+// type searchProps = GetProps<typeof Input.Search>;
+// const onSearch: searchProps['onSearch'] = (value, _e, info) =>
+//     console.log(info?.source, value);
 
 function freqFromHz(freqHz: number): string {
     if (freqHz >= 1e9) {
@@ -50,40 +62,47 @@ export default function RecentQsos() {
         getInitialData();
     }, []);
 
-    return <div id="recent-qsos">
-        <div id="recent-qsos-title">
-            <div id="recent-qsos-bigtitle">
+    return <div id={styles.recent_qsos}>
+        <div id={styles.title}>
+            <div id={styles.bigtitle}>
                 My recent QSOs
             </div>
-            <div id="recent-qsos-subtitle">
+            <div id={styles.subtitle}>
                 {CALLSIGN}
             </div>
         </div>
 
-        <div id="recent-qsos-content">
-            <div id="recent-qsos-toolbar">
+        <div id="content">
+            <div id={styles.toolbar}>
                 {/* TODO: Date. */}
                 {/* Search by callsign. */}
-                <input
-                    id="recent-qsos-callsign-field"
+                {/* <Input
+                    id="callsign-field"
                     type="text"
                     value={callsignValue}
                     onChange={handleCallsignChange}
                     placeholder="Your call"
                 />
-                <button
+                <Button
                     onClick={handleCallsignSearch}
                 >
                     See the call
-                </button>
-                <button
+                </Button> */}
+                <Input.Search
+                    id="callsign-field"
+                    type="text"
+                    onChange={handleCallsignChange}
+                    onSearch={handleCallsignSearch}
+                    style={{width: "200px"}}
+                ></Input.Search>
+                <Button
                     onClick={getInitialData}
                 > See the latests
-                </button>
+                </Button>
             </div>
-            <div id="recent-qsos-table-box">
-                <table id="recent-qsos-table">
-                    <thead id="recent-qsos-table-head">
+            <div id={styles.table_box}>
+                <table id="table">
+                    <thead id="table-head">
                         <tr>
                             <th className="header">UTC</th>
                             <th className="header">CALL</th>
@@ -118,7 +137,7 @@ export default function RecentQsos() {
                 </table>
             </div>
         </div>
-        <div id="source-ad">
+        <div id={styles.source_ad}>
             Have your own logbook online at
             github:Heavysnowjakarta/show-your-logbook
         </div>
