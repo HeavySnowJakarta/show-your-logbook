@@ -1,6 +1,6 @@
 /** The mainpage to show the demo. */
 
-import RecentQsos from "./applets/recent_qsos/main";
+import RecentQsos from "./applets/recent_qsos/page";
 
 export default function Home() {
   return (

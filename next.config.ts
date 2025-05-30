@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/recent-qsos',
+        source: '/recent_qsos',
         headers: [
           {
             key: 'Content-Security-Policy',
