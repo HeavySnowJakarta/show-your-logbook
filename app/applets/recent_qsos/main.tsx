@@ -10,7 +10,7 @@ import { LogEntry } from "@/app/utils/log_entry";
 import { querier } from "@/app/utils/querier";
 import { CALLSIGN } from "@/config";
 
-import { Button, Input, Tag, Table, DatePicker } from 'antd';
+import { Button, Input, Tag, Table, DatePicker, Space } from 'antd';
 // import type { GetProps } from "antd";
 import type { TableProps } from "antd";
 import '@ant-design/v5-patch-for-react-19';
@@ -42,18 +42,6 @@ function freqFromHz(freqHz: number): string {
     }
 }
 
-// Generate the Antd table from the log entries list.
-// function generateTable(entries: LogEntry[]) {
-//     return (entries.map((entry) => {
-//         return {
-//             utc: entry.utc,
-//             call: entry.call,
-//             freq: freqFromHz(entry.freq_hz),
-//             mode: entry.mode
-//         }
-//     }))
-// }
-
 /** The Antd table columns. */
 const columns: TableProps<LogEntry>['columns'] = [
     {
@@ -61,14 +49,6 @@ const columns: TableProps<LogEntry>['columns'] = [
         dataIndex: "utc",
         key: "utc",
         align: "center",
-        // render: (string) => {
-        //     const dateNTime = string.split("T");
-        //     return <>
-        //         {/* {dateNTime[0]}<br />
-        //         {dateNTime[1]} */}
-        //     {dateNTime[0] + '\n' + dateNTime[1]}
-        //     </>
-        // }
     },
     {
         title: "CALL",
@@ -80,6 +60,7 @@ const columns: TableProps<LogEntry>['columns'] = [
         title: "FREQ",
         dataIndex: "freq_hz",
         key: "freq_hz",
+        align: "center",
         render: (freq_hz) => freqFromHz(freq_hz),
     },
     {
@@ -213,24 +194,25 @@ export default function RecentQsos() {
 
         <div id="content">
             <div id={styles.toolbar}>
-                {/* TODO: Date. */}
-                <DatePicker
-                    onChange={handleDateChange}
-                    needConfirm={true}
-                />
+                <Space wrap>
+                    <DatePicker
+                        onChange={handleDateChange}
+                        needConfirm={true}
+                    />
 
-                <Input.Search
-                    id="callsign-field"
-                    type="text"
-                    onChange={handleCallsignChange}
-                    onSearch={handleCallsignSearch}
-                    style={{width: "200px"}}
-                    placeholder="Search by callsign"
-                ></Input.Search>
-                <Button
-                    onClick={getInitialData}
-                > See the latests
-                </Button>
+                    <Input.Search
+                        id="callsign-field"
+                        type="text"
+                        onChange={handleCallsignChange}
+                        onSearch={handleCallsignSearch}
+                        style={{width: "200px"}}
+                        placeholder="Search by callsign"
+                    ></Input.Search>
+                    <Button
+                        onClick={getInitialData}
+                    > See the latests
+                    </Button>
+                </Space>
             </div>
             <div id={styles.table_box}>
                 <Table<LogEntry>
@@ -244,7 +226,7 @@ export default function RecentQsos() {
             </div>
         </div>
         <div id={styles.source_ad}>
-            Have your own logbook online! See&ensp;
+            Show your own logbook online! See&ensp;
             <a href="https://github.com/HeavySnowJakarta/show-your-logbook">
                 the GitHub repository
             </a>.
