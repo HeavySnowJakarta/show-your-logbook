@@ -10,8 +10,9 @@ import { LogEntry } from "@/app/utils/log_entry";
 import { querier } from "@/app/utils/querier";
 import { CALLSIGN } from "@/config";
 
-import { Button, Input } from 'antd';
+import { Button, Input, Tag, Table } from 'antd';
 // import type { GetProps } from "antd";
+import type { TableProps } from "antd";
 import '@ant-design/v5-patch-for-react-19';
 
 import styles from './style.module.css';
@@ -20,6 +21,14 @@ import styles from './style.module.css';
 // type searchProps = GetProps<typeof Input.Search>;
 // const onSearch: searchProps['onSearch'] = (value, _e, info) =>
 //     console.log(info?.source, value);
+
+// Used colors.
+const RED = '#f5222d';
+const ORANGE = '#fa541c';
+const YELLOW = '#faad14';
+const GREEN = '#a0d911';
+const BLUE = '#1677ff';
+const GRAY = '#bfbfbf';
 
 function freqFromHz(freqHz: number): string {
     if (freqHz >= 1e9) {
@@ -32,6 +41,109 @@ function freqFromHz(freqHz: number): string {
         return `${freqHz} Hz`;
     }
 }
+
+// Generate the Antd table from the log entries list.
+// function generateTable(entries: LogEntry[]) {
+//     return (entries.map((entry) => {
+//         return {
+//             utc: entry.utc,
+//             call: entry.call,
+//             freq: freqFromHz(entry.freq_hz),
+//             mode: entry.mode
+//         }
+//     }))
+// }
+
+/** The Antd table columns. */
+const columns: TableProps<LogEntry>['columns'] = [
+    {
+        title: "UTC",
+        dataIndex: "utc",
+        key: "utc",
+    },
+    {
+        title: "CALL",
+        dataIndex: "call",
+        key: "call",
+    },
+    {
+        title: "FREQ",
+        dataIndex: "freq_hz",
+        key: "freq_hz",
+        render: (freq_hz) => freqFromHz(freq_hz),
+    },
+    {
+        title: "MODE",
+        dataIndex: "mode",
+        key: "mode",
+    },
+    {
+        title: "MY CARD",
+        dataIndex: "my_card",
+        key: "my_card",
+        render: (_, {my_card}) => {
+            let color;
+            switch (my_card) {
+                case "Failed to contact":
+                    color = RED;
+                    break;
+                case "Preparing":
+                    color = YELLOW;
+                    break;
+                case "Sent":
+                    color = GREEN;
+                    break;
+                case "Cancelled":
+                    color = GRAY;
+                    break;
+                default:
+                    color = GRAY;
+            }
+            return <Tag color={color} key={my_card}>{my_card}</Tag>;
+        }
+    },
+    {
+        title: "UR CARD",
+        dataIndex: "your_card",
+        key: "your_card",
+        render: (_, {your_card}) => {
+            let color;
+            switch (your_card) {
+                case "Not received":
+                    color = RED;
+                    break;
+                case "Received":
+                    color = GREEN;
+                    break;
+                default:
+                    color = GRAY;
+            }
+            return <Tag color={color} key={your_card}>{your_card}</Tag>;
+        }
+    },
+    {
+        title: "LoTW",
+        dataIndex: "lotw",
+        key: "lotw",
+        render: (_, {lotw}) => {
+            let color;
+            switch (lotw) {
+                case "Preparing":
+                    color = ORANGE;
+                    break;
+                case "QSO":
+                    color = BLUE;
+                    break;
+                case "QSL":
+                    color = GREEN;
+                    break;
+                default:
+                    color = GRAY;
+            }
+            return <Tag color={color} key={lotw}>{lotw}</Tag>;
+        }
+    }
+];
 
 export default function RecentQsos() {
     // States of the log entries.
@@ -101,7 +213,7 @@ export default function RecentQsos() {
                 </Button>
             </div>
             <div id={styles.table_box}>
-                <table id="table">
+                {/* <table id="table">
                     <thead id="table-head">
                         <tr>
                             <th className="header">UTC</th>
@@ -134,7 +246,11 @@ export default function RecentQsos() {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </table> */}
+                <Table<LogEntry>
+                    columns={columns}
+                    dataSource={entriesValue}
+                />
             </div>
         </div>
         <div id={styles.source_ad}>

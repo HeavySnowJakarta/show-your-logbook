@@ -1,6 +1,6 @@
 #recent_qsos {
-    /* TODO: Max width */
-    width: 650px;
+    /* TODO: Min width */
+    width: auto;
     height: auto;
 
     padding: 20px;
