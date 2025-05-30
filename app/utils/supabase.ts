@@ -40,7 +40,8 @@ class SupabaseUtils {
         const { data, error } = await this.supabase
             .from("logbook")
             .select()
-            .eq('DATE(utc)', new Date(date).toISOString().split('T')[0])
+            .filter('utc', 'gte', `${date}T00:00:00`)
+            .filter('utc', 'lt', `${date}T23:59:59.999`)
             .order('utc', {ascending: true});
         if (error) {
             throw new Error(
@@ -59,18 +60,34 @@ class SupabaseUtils {
     getByCall = async (call: string): Promise<LogEntry[]> => {
         const { data, error } = await this.supabase
             .from("logbook")
-            .select('*, position(lower($1) in lower(column_name)) as match_position',
+            .select('*',
                 {count: 'exact'}
             )
             .ilike('call', `%${call}%`)
-            .order('match_position', {ascending: true})
-            .order('length(call)', {ascending: true});
         if (error) {
             throw new Error(
                 `Failed to fetch log entries for call sign ${call}: ${error.message}`
             );
         }
-        return data as unknown as LogEntry[];
+
+        const upperCall = call.toUpperCase();
+        const sortedData = data
+        .map(entry => {
+            // Calculate the match position. 
+            const matchPosition = entry.call.toUpperCase().indexOf(upperCall);
+            return { ...entry, matchPosition };
+        })
+        .sort((a, b) => {
+            // Sort by match position first
+            if (a.matchPosition !== b.matchPosition) {
+                return a.matchPosition - b.matchPosition;
+            }
+            // Then sort by call length
+            return a.call.length - b.call.length;
+        });
+
+        return sortedData.map(({ matchPosition, ...rest }) => rest
+            ) as LogEntry[];
     }
 }
 

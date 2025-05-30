@@ -10,7 +10,7 @@ import { LogEntry } from "@/app/utils/log_entry";
 import { querier } from "@/app/utils/querier";
 import { CALLSIGN } from "@/config";
 
-import { Button, Input, Tag, Table } from 'antd';
+import { Button, Input, Tag, Table, DatePicker } from 'antd';
 // import type { GetProps } from "antd";
 import type { TableProps } from "antd";
 import '@ant-design/v5-patch-for-react-19';
@@ -60,11 +60,21 @@ const columns: TableProps<LogEntry>['columns'] = [
         title: "UTC",
         dataIndex: "utc",
         key: "utc",
+        align: "center",
+        // render: (string) => {
+        //     const dateNTime = string.split("T");
+        //     return <>
+        //         {/* {dateNTime[0]}<br />
+        //         {dateNTime[1]} */}
+        //     {dateNTime[0] + '\n' + dateNTime[1]}
+        //     </>
+        // }
     },
     {
         title: "CALL",
         dataIndex: "call",
         key: "call",
+        align: "center",
     },
     {
         title: "FREQ",
@@ -76,6 +86,7 @@ const columns: TableProps<LogEntry>['columns'] = [
         title: "MODE",
         dataIndex: "mode",
         key: "mode",
+        align: "center",
     },
     {
         title: "MY CARD",
@@ -100,7 +111,8 @@ const columns: TableProps<LogEntry>['columns'] = [
                     color = GRAY;
             }
             return <Tag color={color} key={my_card}>{my_card}</Tag>;
-        }
+        },
+        align: "center",
     },
     {
         title: "UR CARD",
@@ -119,7 +131,8 @@ const columns: TableProps<LogEntry>['columns'] = [
                     color = GRAY;
             }
             return <Tag color={color} key={your_card}>{your_card}</Tag>;
-        }
+        },
+        align: "center",
     },
     {
         title: "LoTW",
@@ -141,7 +154,8 @@ const columns: TableProps<LogEntry>['columns'] = [
                     color = GRAY;
             }
             return <Tag color={color} key={lotw}>{lotw}</Tag>;
-        }
+        },
+        align: "center",
     }
 ];
 
@@ -151,6 +165,19 @@ export default function RecentQsos() {
 
     // States of callsign field.
     const [callsignValue, setCallsignValue] = useState("");
+
+    // The function when a date is selected.
+    const handleDateChange = async (
+        _: unknown,
+        datestring: string | string[]
+    ) => {
+        if (typeof datestring === 'string') {
+            setEntriesValue(await querier.getByDate(datestring));
+        }
+        else {
+            setEntriesValue(await querier.getByDate(datestring[0]));
+        }
+    }
 
     // The function when the field of name has been changed.
     const handleCallsignChange = (
@@ -187,25 +214,18 @@ export default function RecentQsos() {
         <div id="content">
             <div id={styles.toolbar}>
                 {/* TODO: Date. */}
-                {/* Search by callsign. */}
-                {/* <Input
-                    id="callsign-field"
-                    type="text"
-                    value={callsignValue}
-                    onChange={handleCallsignChange}
-                    placeholder="Your call"
+                <DatePicker
+                    onChange={handleDateChange}
+                    needConfirm={true}
                 />
-                <Button
-                    onClick={handleCallsignSearch}
-                >
-                    See the call
-                </Button> */}
+
                 <Input.Search
                     id="callsign-field"
                     type="text"
                     onChange={handleCallsignChange}
                     onSearch={handleCallsignSearch}
                     style={{width: "200px"}}
+                    placeholder="Search by callsign"
                 ></Input.Search>
                 <Button
                     onClick={getInitialData}
@@ -213,49 +233,21 @@ export default function RecentQsos() {
                 </Button>
             </div>
             <div id={styles.table_box}>
-                {/* <table id="table">
-                    <thead id="table-head">
-                        <tr>
-                            <th className="header">UTC</th>
-                            <th className="header">CALL</th>
-                            <th className="header">FREQ</th>
-                            <th className="header">MODE</th>
-                            <th className="header">MY CARD</th>
-                            <th className="header">UR CARD</th>
-                            <th className="header">LoTW</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {entriesValue.map((entry) => (
-                            <tr key={entry.id}>
-                                <td className="utc">{entry.utc}</td>
-                                <td className="call">{entry.call}</td>
-                                <td className="freq">
-                                    {freqFromHz(entry.freq_hz)}
-                                </td>
-                                <td className="mode">{entry.mode}</td>
-                                <td className={`my-card ${entry.my_card}`}>
-                                    {entry.my_card ?? "Null"}
-                                </td>
-                                <td className={`ur-card ${entry.your_card}`}>
-                                    {entry.your_card ?? "Null"}
-                                </td>
-                                <td className={`lotw ${entry.lotw}`}>
-                                    {entry.lotw ?? "Null"}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table> */}
                 <Table<LogEntry>
                     columns={columns}
                     dataSource={entriesValue}
+                    rowKey={(entry) => entry.id}
+                    pagination={{
+                        hideOnSinglePage: true,
+                    }}
                 />
             </div>
         </div>
         <div id={styles.source_ad}>
-            Have your own logbook online at
-            github:Heavysnowjakarta/show-your-logbook
+            Have your own logbook online! See&ensp;
+            <a href="https://github.com/HeavySnowJakarta/show-your-logbook">
+                the GitHub repository
+            </a>.
         </div>
     </div>
 }
